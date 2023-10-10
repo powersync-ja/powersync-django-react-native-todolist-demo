@@ -11,6 +11,7 @@ export class ApiClient {
 
     async authenticate(username: string, password: string): Promise<any> {
         const requestBody = { username, password };
+        console.log(this.baseUrl);
         const response = await fetch(`${this.baseUrl}/api/auth/`, {
             method: "POST",
             body: JSON.stringify(requestBody),
@@ -23,7 +24,7 @@ export class ApiClient {
     }
 
     async getSession (userId: string) {
-        const response = await fetch(`${this.baseUrl}/api/get_token`, {
+        const response = await fetch(`${this.baseUrl}/api/get_token/`, {
             method: "GET",
             headers: this.headers
         });
@@ -34,8 +35,8 @@ export class ApiClient {
     }
 
     async update (data: any): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/auth`, {
-            method: "GET",
+        const response = await fetch(`${this.baseUrl}/api/sync/`, {
+            method: "PATCH",
             headers: this.headers,
             body: JSON.stringify(data)
         });
@@ -45,7 +46,7 @@ export class ApiClient {
     }
 
     async upsert (data: any): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/auth`, {
+        const response = await fetch(`${this.baseUrl}/api/sync/`, {
             method: "PUT",
             headers: this.headers,
             body: JSON.stringify(data)
@@ -56,7 +57,7 @@ export class ApiClient {
     }
 
     async delete (data: any): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/auth`, {
+        const response = await fetch(`${this.baseUrl}/api/sync/`, {
             method: "DELETE",
             headers: this.headers,
             body: JSON.stringify(data)

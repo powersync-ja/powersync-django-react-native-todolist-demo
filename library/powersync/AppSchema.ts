@@ -2,7 +2,7 @@ import { Column, ColumnType, Index, IndexedColumn, Schema, Table } from '@journe
 
 export const AppSchema = new Schema([
   new Table({
-    name: 'todos',
+    name: 'api_todo',
     columns: [
       new Column({ name: 'list_id', type: ColumnType.TEXT }),
       new Column({ name: 'created_at', type: ColumnType.TEXT }),
@@ -15,7 +15,7 @@ export const AppSchema = new Schema([
     indexes: [new Index({ name: 'list', columns: [new IndexedColumn({ name: 'list_id' })] })]
   }),
   new Table({
-    name: 'lists',
+    name: 'api_list',
     columns: [
       new Column({ name: 'created_at', type: ColumnType.TEXT }),
       new Column({ name: 'name', type: ColumnType.TEXT }),

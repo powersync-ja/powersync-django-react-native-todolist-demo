@@ -13,7 +13,7 @@ export interface TodoRecord extends ModelRecord {
   list_id: string;
 }
 
-export const TODO_TABLE = 'todos';
+export const TODO_TABLE = 'api_todo';
 
 export class TodoModel extends AbstractModel<TodoRecord> {
   get table() {
@@ -38,7 +38,7 @@ export class TodoModel extends AbstractModel<TodoRecord> {
   }
 
   async toggleCompletion(completed: boolean) {
-    const { userID } = await this.system.supabaseConnector.fetchCredentials();
+    const { userID } = await this.system.djangoConnector.fetchCredentials();
 
     return this.update({
       ...this.record,

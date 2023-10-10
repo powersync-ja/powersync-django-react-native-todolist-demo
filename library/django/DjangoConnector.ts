@@ -64,8 +64,7 @@ export class DjangoConnector implements PowerSyncBackendConnector {
       // or edge functions to process the entire transaction in a single call.
       for (let op of transaction.crud) {
         lastOp = op;
-        const record = { ...op.opData, id: op.id };
-
+        const record = { table: op.table, data: { ...op.opData, id: op.id }};
         switch (op.op) {
           case UpdateType.PUT:
             await this.apiClient.upsert(record);
