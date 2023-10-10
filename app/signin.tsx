@@ -8,7 +8,7 @@ import { TextInputWidget } from '../library/widgets/TextInputWidget';
 import { Icon } from 'react-native-elements';
 
 export default function Signin() {
-  const { supabaseConnector } = useSystem();
+  const { djangoConnector } = useSystem();
   const [loading, setLoading] = React.useState(false);
   const [credentials, setCredentials] = React.useState({ username: '', password: '' });
   const [error, setError] = React.useState('');
@@ -40,7 +40,7 @@ export default function Signin() {
                 setLoading(true);
                 setError('');
                 try {
-                  await supabaseConnector.login(credentials.username, credentials.password);
+                  await djangoConnector.login(credentials.username, credentials.password);
                   router.replace('views/todos/lists');
                 } catch (ex: any) {
                   console.error(ex);

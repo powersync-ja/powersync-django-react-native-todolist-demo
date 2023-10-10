@@ -11,7 +11,7 @@ export class TodoStore extends AbstractStore<TodoModel> {
   }
 
   async _createModel(record: TodoRecord): Promise<TodoModel> {
-    const { userID } = await this.system.supabaseConnector.fetchCredentials();
+    const { userID } = await this.system.djangoConnector.fetchCredentials();
 
     await this.system.powersync.execute(
       `INSERT INTO ${TODO_TABLE} (id, created_at, completed, completed_at, description, created_by, completed_by, list_id) VALUES (uuid(), datetime(), ?, ?, ?, ?, ?, ?)`,

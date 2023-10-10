@@ -1,8 +1,7 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { SupportedStorage } from '@supabase/supabase-js';
 
-export const SupabaseStorage: SupportedStorage = {
-  getItem: async (key) => {
+export const DjangoStorage = {
+  getItem: async (key: string) => {
     try {
       const session = await EncryptedStorage.getItem(key);
 
@@ -12,10 +11,10 @@ export const SupabaseStorage: SupportedStorage = {
       return null;
     }
   },
-  setItem: async (key, value) => {
+  setItem: async (key: string, value: string) => {
     await EncryptedStorage.setItem(key, value);
   },
-  removeItem: async (key) => {
+  removeItem: async (key: string) => {
     try {
       await EncryptedStorage.removeItem(key);
     } catch (ex) {}

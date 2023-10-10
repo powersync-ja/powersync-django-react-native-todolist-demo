@@ -1,7 +1,10 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# idea
+.idea
+
 # Credentials
-library/supabase/AppConfig.ts
+library/django/AppConfig.ts
 
 # dependencies
 node_modules/

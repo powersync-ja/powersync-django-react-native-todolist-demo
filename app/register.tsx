@@ -9,7 +9,7 @@ import { SignInStyles } from './signin';
 import { Icon } from 'react-native-elements';
 
 export default function Register() {
-  const { supabaseConnector } = useSystem();
+  const { djangoConnector } = useSystem();
   const [loading, setLoading] = React.useState(false);
   const [credentials, setCredentials] = React.useState({ username: '', password: '' });
   const [error, setError] = React.useState('');
@@ -40,19 +40,19 @@ export default function Register() {
                 setLoading(true);
                 setError('');
                 try {
-                  const { data, error } = await supabaseConnector.supabaseClient.auth.signUp({
-                    email: credentials.username,
-                    password: credentials.password
-                  });
-                  if (error) {
-                    throw error;
-                  }
-                  if (data.session) {
-                    supabaseConnector.supabaseClient.auth.setSession(data.session);
-                    router.replace('views/todos/lists');
-                  } else {
-                    router.replace('signin');
-                  }
+                  // const { data, error } = await djangoConnector.supabaseClient.auth.signUp({
+                  //   email: credentials.username,
+                  //   password: credentials.password
+                  // });
+                  // if (error) {
+                  //   throw error;
+                  // }
+                  // if (data.session) {
+                  //   // djangoConnector.supabaseClient.auth.setSession(data.session);
+                  //   router.replace('views/todos/lists');
+                  // } else {
+                  //   router.replace('signin');
+                  // }
                 } catch (ex: any) {
                   console.error(ex);
                   setError(ex.message || 'Could not register');

@@ -5,9 +5,9 @@ import {
   UpdateType
 } from '@journeyapps/powersync-sdk-react-native';
 
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import { AppConfig } from './AppConfig';
-import { SupabaseStorage } from './SupabaseStorage';
+import {ApiClient} from './ApiClient';
+import { DjangoStorage } from './DjangoStorage';
 
 /// Postgres Response codes that we cannot recover from by retrying.
 const FATAL_RESPONSE_CODES = [
@@ -21,47 +21,33 @@ const FATAL_RESPONSE_CODES = [
   new RegExp('^42501$')
 ];
 
-export class SupabaseConnector implements PowerSyncBackendConnector {
-  supabaseClient: SupabaseClient;
+export class DjangoConnector implements PowerSyncBackendConnector {
+
+  private apiClient: ApiClient;
 
   constructor() {
-    this.supabaseClient = createClient(AppConfig.supabaseUrl, AppConfig.supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        storage: SupabaseStorage
-      }
-    });
+    this.apiClient = new ApiClient(AppConfig.djangoUrl);
   }
 
   async login(username: string, password: string) {
-    const { data, error } = await this.supabaseClient.auth.signInWithPassword({
-      email: username,
-      password: password
-    });
-
-    if (error) {
-      throw error;
+    const data = await this.apiClient.authenticate(username, password);
+    if(data) {
+      const payload = this.parseJwt(data.access_token);
+      await DjangoStorage.setItem("id", payload.sub.toString());
     }
   }
 
   async fetchCredentials() {
-    const {
-      data: { session },
-      error
-    } = await this.supabaseClient.auth.getSession();
-
-    if (!session || error) {
-      throw new Error(`Could not fetch Supabase credentials: ${error}`);
+    const userId = await DjangoStorage.getItem("id");
+    if(!userId) {
+        throw new Error("User does not have session");
     }
-
-    console.debug('session expires at', session.expires_at);
-
+    const session = await this.apiClient.getSession(userId);
     return {
-      client: this.supabaseClient,
-      endpoint: AppConfig.powersyncUrl,
-      token: session.access_token ?? '',
-      expiresAt: session.expires_at ? new Date(session.expires_at * 1000) : undefined,
-      userID: session.user.id
+      endpoint: session.powersync_url,
+      token: session.token ?? '',
+      expiresAt: undefined,
+      userID: userId
     };
   }
 
@@ -78,20 +64,19 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
       // or edge functions to process the entire transaction in a single call.
       for (let op of transaction.crud) {
         lastOp = op;
-        const table = this.supabaseClient.from(op.table);
+        const record = { ...op.opData, id: op.id };
+
         switch (op.op) {
           case UpdateType.PUT:
-            const record = { ...op.opData, id: op.id };
-            const { error } = await table.upsert(record);
-            if (error) {
-              throw new Error(`Could not upsert data to Supabase ${JSON.stringify(error)}`);
-            }
+            await this.apiClient.upsert(record);
             break;
           case UpdateType.PATCH:
-            await table.update(op.opData).eq('id', op.id);
+            console.log("PATCH",op.opData, op.id);
+            await this.apiClient.update(record);
             break;
           case UpdateType.DELETE:
-            await table.delete().eq('id', op.id);
+            console.log("DELETE", op.id);
+            await this.apiClient.delete(record);
             break;
         }
       }
@@ -116,5 +101,15 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         throw ex;
       }
     }
+  }
+
+  private parseJwt (token: string) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
   }
 }

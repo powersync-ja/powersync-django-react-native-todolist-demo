@@ -15,7 +15,7 @@ export class ListStore extends AbstractStore<ListModel> {
   }
 
   async _createModel(record: ListRecord): Promise<ListModel> {
-    const { userID } = await this.system.supabaseConnector.fetchCredentials();
+    const { userID } = await this.system.djangoConnector.fetchCredentials();
 
     const res = await this.system.powersync.execute(
       `INSERT INTO ${LIST_TABLE} (id, created_at, name, owner_id) VALUES (uuid(), datetime(), ?, ?) RETURNING *`,

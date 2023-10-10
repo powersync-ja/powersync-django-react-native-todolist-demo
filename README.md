@@ -61,10 +61,10 @@ bucket_definitions:
 
 ## Configure The App
 
-Copy the `AppConfig.template.ts` to a usable file
+Copy the `AppConfig.ts` to a usable file
 
 ```bash
-cp library/supabase/AppConfig.template.ts library/supabase/AppConfig.ts
+cp library/django/AppConfig.ts library/django/AppConfig.ts
 ```
 
 Insert the necessary credentials.

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { observer } from 'mobx-react-lite';
-
 import { useSystem } from '../library/stores/system';
 import { router } from 'expo-router';
 import Logger from 'js-logger';
@@ -12,23 +11,26 @@ import Logger from 'js-logger';
  *  - If not, reditect to login/register flow
  */
 const App = observer(() => {
-  const { supabaseConnector } = useSystem();
+  const { djangoConnector } = useSystem();
 
   React.useEffect(() => {
     Logger.useDefaults();
     Logger.setLevel(Logger.DEBUG);
-    supabaseConnector.supabaseClient.auth
-      .getSession()
-      .then(({ data, error }) => {
-        if (data.session) {
-          router.replace('views/todos/lists');
-        } else {
-          throw new Error('Signin required');
+
+    const getSession = async () => {
+      const response = await fetch("http://127.0.0.1:8000/api/get_session", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
         }
-      })
-      .catch(() => {
-        router.replace('signin');
       });
+      const data = await response.json();
+      if(data) {
+        router.replace('signin');
+      }
+    }
+
+    getSession();
   }, []);
 
   return (
