@@ -1,6 +1,6 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-export const DjangoStorage = {
+export const Storage = {
   getItem: async (key: string) => {
     try {
       const session = await EncryptedStorage.getItem(key);

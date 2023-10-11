@@ -10,8 +10,8 @@ export class ApiClient {
     }
 
     async authenticate(username: string, password: string): Promise<any> {
+        // This demo contains plain text password, you should implement more secure methods here
         const requestBody = { username, password };
-        console.log(this.baseUrl);
         const response = await fetch(`${this.baseUrl}/api/auth/`, {
             method: "POST",
             body: JSON.stringify(requestBody),
@@ -23,7 +23,7 @@ export class ApiClient {
         return await response.json();
     }
 
-    async getSession (userId: string) {
+    async getToken (userId: string) {
         const response = await fetch(`${this.baseUrl}/api/get_token/`, {
             method: "GET",
             headers: this.headers

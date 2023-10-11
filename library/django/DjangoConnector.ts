@@ -7,7 +7,7 @@ import {
 
 import { AppConfig } from './AppConfig';
 import {ApiClient} from './ApiClient';
-import { DjangoStorage } from './DjangoStorage';
+import { Storage } from './Storage';
 
 /// Postgres Response codes that we cannot recover from by retrying.
 const FATAL_RESPONSE_CODES = [
@@ -33,16 +33,18 @@ export class DjangoConnector implements PowerSyncBackendConnector {
     const data = await this.apiClient.authenticate(username, password);
     if(data) {
       const payload = this.parseJwt(data.access_token);
-      await DjangoStorage.setItem("id", payload.sub.toString());
+      await Storage.setItem("id", payload.sub.toString());
     }
   }
 
   async fetchCredentials() {
-    const userId = await DjangoStorage.getItem("id");
+    // The demo does not invalidate or update a user token, you should implement this in your app
+    // The app stores the user id in local storage
+    const userId = await Storage.getItem("id");
     if(!userId) {
         throw new Error("User does not have session");
     }
-    const session = await this.apiClient.getSession(userId);
+    const session = await this.apiClient.getToken(userId);
     return {
       endpoint: session.powersync_url,
       token: session.token ?? '',
@@ -70,11 +72,9 @@ export class DjangoConnector implements PowerSyncBackendConnector {
             await this.apiClient.upsert(record);
             break;
           case UpdateType.PATCH:
-            console.log("PATCH",op.opData, op.id);
             await this.apiClient.update(record);
             break;
           case UpdateType.DELETE:
-            console.log("DELETE", op.id);
             await this.apiClient.delete(record);
             break;
         }

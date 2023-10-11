@@ -1,4 +1,4 @@
-# PowerSync + Supabase React Native Demo: Todo List 
+# PowerSync + Django React Native Demo: Todo List 
 
 ## Note: Alpha Release
 
@@ -6,11 +6,8 @@ This package is currently in an alpha release. Functionality could change dramat
 
 ## Overview
 
-Demo app demonstrating use of the [PowerSync SDK for React Native](https://www.npmjs.com/package/@journeyapps/powersync-sdk-react-native) together with Supabase.
-
-A step-by-step guide on Supabase<>PowerSync integration is available [here](https://docs.powersync.co/integration-guides/supabase). (Note: This guide is currently written for Flutter apps; it will be updated for React Native soon)
-
-![docs-react-native-supabase-powersync-setup](https://github.com/journeyapps/powersync-supabase-react-native-todolist-demo/assets/277659/923dc9a2-6a0e-4ce4-934d-29e3ab8b0f09)
+Demo app demonstrating use of the [PowerSync SDK for React Native](https://www.npmjs.com/package/@journeyapps/powersync-sdk-react-native) together with a Django backend.
+The sample backend that you can run alongside this demo can be found here: [PowerSync Django Backend: Todo List Demo](https://github.com/michaelbarnes/powersync-django-backend-todolist-demo)
 
 ## Running the App
 
@@ -32,16 +29,10 @@ Run on Android
 yarn android
 ```
 
-## Set up Supabase Project
+## Set up Django Backend
 
-Create a new Supabase project, and paste and run the contents of [database.sql](./database.sql) in the Supabase SQL editor.
-
-It does the following:
-
-1. Create `lists` and `todos` tables.
-2. Create a publication called `powersync` for `lists` and `todos`.
-3. Enable row level security, allowing users to only view and edit their own data.
-4. Create a trigger to populate some sample data when an user registers.
+This demo requires that you have the [PowerSync Django Backend: Todo List Demo](https://github.com/michaelbarnes/powersync-django-backend-todolist-demo)  running on your machine.
+Follow the guide in the README of the PowerSync Django Backend to set it up.
 
 ## Set up PowerSync Instance
 
@@ -55,16 +46,16 @@ bucket_definitions:
     # Separate bucket per todo list
     parameters: select id as list_id from lists where owner_id = token_parameters.user_id
     data:
-      - select * from lists where id = bucket.list_id
-      - select * from todos where list_id = bucket.list_id
+      - select * from api_lists 
+      - select * from api_todos 
 ```
 
 ## Configure The App
 
-Copy the `AppConfig.ts` to a usable file
+Copy the `AppConfig.template.ts` to a usable file
 
 ```bash
-cp library/django/AppConfig.ts library/django/AppConfig.ts
+cp library/django/AppConfig.template.ts library/django/AppConfig.ts
 ```
 
 Insert the necessary credentials.
