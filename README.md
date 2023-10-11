@@ -46,8 +46,8 @@ bucket_definitions:
     # Separate bucket per todo list
     parameters: select id as list_id from lists where owner_id = token_parameters.user_id
     data:
-      - select * from api_lists 
-      - select * from api_todos 
+      - select * from api_list 
+      - select * from api_todo 
 ```
 
 ## Configure The App
