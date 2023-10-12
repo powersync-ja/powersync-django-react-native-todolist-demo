@@ -35,7 +35,7 @@ export class ApiClient {
     }
 
     async update (data: any): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/sync/`, {
+        const response = await fetch(`${this.baseUrl}/api/upload_data/`, {
             method: "PATCH",
             headers: this.headers,
             body: JSON.stringify(data)
@@ -46,7 +46,7 @@ export class ApiClient {
     }
 
     async upsert (data: any): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/sync/`, {
+        const response = await fetch(`${this.baseUrl}/api/upload_data/`, {
             method: "PUT",
             headers: this.headers,
             body: JSON.stringify(data)
@@ -57,7 +57,7 @@ export class ApiClient {
     }
 
     async delete (data: any): Promise<void> {
-        const response = await fetch(`${this.baseUrl}/api/sync/`, {
+        const response = await fetch(`${this.baseUrl}/api/upload_data/`, {
             method: "DELETE",
             headers: this.headers,
             body: JSON.stringify(data)
